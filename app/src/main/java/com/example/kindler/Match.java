@@ -16,9 +16,11 @@ public class Match extends AppCompatActivity {
 
     int sampleImage = R.drawable.test;
 
-    String[] bookIDs = {"Harry Potter", "A Wrinkle in Time", "1984", "Animal Farm", "Gone Girl", "To All the Boys I've Loved Before", "Leen In"};
+    String[] bookIDs = {"Harry Potter", "A Wrinkle in Time", "1984", "Animal Farm", "Gone Girl", "To All the Boys I've Loved Before"};
 
-    String[] userId = {"User1", "User2", "User3", "User4", "User5", "User6", "User7"};
+    String[] userId = {"User1", "User2", "User3", "User4", "User5", "User6"};
+
+    int[] images = new int[6];
 
 
     @Override
@@ -27,6 +29,13 @@ public class Match extends AppCompatActivity {
         setContentView(R.layout.activity_match);
 
         final ListView matchList = findViewById(R.id.matchList);
+
+        images[0] = R.drawable.harry;
+        images[1] = R.drawable.wrinkle;
+        images[2] = R.drawable.orwell;
+        images[3] = R.drawable.animal;
+        images[4] = R.drawable.gone;
+        images[5] = R.drawable.to;
 
         CustomAdapter customAdapter = new CustomAdapter();
 
@@ -40,9 +49,10 @@ public class Match extends AppCompatActivity {
                 Intent intent = new Intent(Match.this, MatchDetail.class);
                 String matchUser = userId[position];
                 String bookName = bookIDs[position];
+                int imageName = images[position];
                 intent.putExtra("matchUser", matchUser);
                 intent.putExtra("bookName", bookName);
-                intent.putExtra("image", Integer.toString(sampleImage));
+                intent.putExtra("image", imageName);
 
                 startActivity(intent);
 
@@ -76,7 +86,7 @@ public class Match extends AppCompatActivity {
             TextView matchUserId = view.findViewById(R.id.matchUserId);
             TextView matchBookTitle = view.findViewById(R.id.matchBookTitle);
 
-            matchImage.setImageResource(sampleImage);
+            matchImage.setImageResource(images[i]);
             matchUserId.setText(userId[i]);
             matchBookTitle.setText(bookIDs[i]);
 

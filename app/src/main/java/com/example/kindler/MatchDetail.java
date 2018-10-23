@@ -17,7 +17,7 @@ public class MatchDetail extends AppCompatActivity {
         Intent intent = getIntent();
         String matchUser = intent.getStringExtra("matchUser");
         String bookName = intent.getStringExtra("bookName");
-        int image = Integer.parseInt(intent.getStringExtra("image"));
+        int image = intent.getIntExtra("imageName", 0);
 
         TextView matchDetail_userName = findViewById(R.id.matchDetail_userName);
         TextView matchDetail_bookName = findViewById(R.id.matchDetail_bookName);

@@ -24,15 +24,16 @@ public class UserViewModel extends AndroidViewModel{
         mBookRepository = new BookRepository(application);
         mMatchRepository = new MatchRepository(application);
         mAllUsers = mUserRepository.getAllUsers();
+
     }
 
-    LiveData<List<User>> getAllUsers() { return mAllUsers; }
+    public LiveData<List<User>> getAllUsers() { return mAllUsers; }
 
-    LiveData<User> getCurrUser() {
+    public LiveData<User> getCurrUser() {
         return mCurrUser;
     }
 
-    boolean login(String username, String password) {
+    public boolean login(String username, String password) {
         if (mUserRepository.auth(username, password)) {
             mCurrUser = mUserRepository.getCurrUser();
             return true;
@@ -40,7 +41,7 @@ public class UserViewModel extends AndroidViewModel{
         return false;
     }
 
-    boolean register(String username, String password) {
+    public boolean register(String username, String password) {
         if (mUserRepository.auth(username, password)) {
             //already registered
             return false;
