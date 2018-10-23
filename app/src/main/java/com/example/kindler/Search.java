@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -33,7 +35,8 @@ public class Search extends AppCompatActivity implements View.OnClickListener {
 
     EditText _search;
     Button _button;
-    ScrollView _searchResultList;
+    ListView _searchResultList;
+    CustomAdapter _bookListAdapter;
 
     ArrayList<BookItem> results;
 
@@ -44,11 +47,12 @@ public class Search extends AppCompatActivity implements View.OnClickListener {
 
         this._search = findViewById(R.id.searchText);
         this._button = findViewById(R.id.searchButton);
-        this._searchResultList = findViewById(R.id.searchResultList);
+        this._searchResultList = findViewById(R.id.searchResultsList);
 
-        if (this._button != null) {
-            this._button.setOnClickListener(this);
-        }
+        _bookListAdapter = new CustomAdapter();
+        this._searchResultList.setAdapter(_bookListAdapter);
+
+        this._button.setOnClickListener(this);
     }
 
     @Override
@@ -82,61 +86,10 @@ public class Search extends AppCompatActivity implements View.OnClickListener {
         queue.add(stringRequest);
     }
 
-    private void redrawResults() {
-        _searchResultList.removeAllViewsInLayout();
-
-        LinearLayout bookshelf = new LinearLayout(this);
-        bookshelf.setOrientation(LinearLayout.VERTICAL);
-
-        //add books to scroll bar
-        for (int i = 0; i < results.size(); i++) {
-            //create horizontal linear layout to hold book and remove button
-            LinearLayout bookView = new LinearLayout(this);
-            bookView.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
-            bookView.setOrientation(LinearLayout.HORIZONTAL);
-            bookView.setGravity(Gravity.CENTER);
-
-            //create book view
-            LinearLayout bookArea = new LinearLayout(this);
-            bookArea.setOrientation(LinearLayout.VERTICAL);
-            bookArea.setPadding(16,0,16,0);
-            bookArea.setLayoutParams( new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1.0f));
-
-            //create text view for book title
-            TextView bookTitle = new TextView(this);
-            bookTitle.setText(results.get(i).title);
-            bookTitle.setTextSize(30);
-
-            //create Image view for book picture
-            ImageView bookImage = new ImageView( this);
-            int maxHeight = 300;
-            int maxWidth = 200;
-            bookImage.setBackgroundColor(Color.BLUE);
-            bookImage.setMaxHeight(maxHeight);
-            bookImage.setMinimumHeight(maxHeight);
-            bookImage.setMinimumWidth(maxWidth);
-            bookImage.setMaxWidth(maxWidth);
-            Picasso.with(getBaseContext()).load(results.get(i).imageLink).into(bookImage);
-
-            //add text view and image view to book linear layout
-            bookArea.addView(bookTitle);
-            bookArea.addView(bookImage);
-            bookView.addView(bookArea);
-            bookshelf.addView(bookView);
-        }
-
-        //add to scroll view
-        _searchResultList.addView(bookshelf);
-    }
-
     private void handleResponse(String response) {
         try {
-            ArrayList<BookItem> results = new ArrayList<>();
+            _bookListAdapter.notifyDataSetInvalidated();
+            results.clear();
 
             JSONObject data = new JSONObject(response);
             JSONArray items = data.getJSONArray("items");
@@ -157,12 +110,50 @@ public class Search extends AppCompatActivity implements View.OnClickListener {
                 results.add(book);
             }
 
-            this.results = results;
-
-            this.redrawResults();
+            _bookListAdapter.notifyDataSetChanged();
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    class CustomAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount(){
+            if (results == null) {
+                return 0;
+            }
+            return results.size();
+        }
+
+        @Override
+        public BookItem getItem(int i){
+            return results.get(i);
+        }
+
+        @Override
+        public long getItemId(int i){
+            return getItem(i).id.hashCode();
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup){
+            view = getLayoutInflater().inflate(R.layout.customlist, null);
+            ImageView matchImage = view.findViewById(R.id.matchImage);
+            TextView matchUserId = view.findViewById(R.id.matchUserId);
+            TextView matchBookTitle = view.findViewById(R.id.matchBookTitle);
+
+            BookItem item = getItem(i);
+
+            Picasso.with(getBaseContext()).load(item.imageLink).into(matchImage);
+
+            matchUserId.setText(item.title);
+            matchBookTitle.setText(item.getAuthorsString());
+
+            return view;
+        }
+
+
     }
 }
