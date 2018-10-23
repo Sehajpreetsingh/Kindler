@@ -8,11 +8,11 @@
         app:showAsAction="ifRoom"/>
     <item  android:id="@+id/menu_profile"
         android:title="@string/match_profile"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
     <item  android:id="@+id/menu_booklist"
         android:title="@string/book_list"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
     <item  android:id="@+id/menu_matches"
         android:title="@string/match"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 </menu>
